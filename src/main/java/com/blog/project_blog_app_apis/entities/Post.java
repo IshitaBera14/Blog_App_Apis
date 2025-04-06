@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -16,7 +18,7 @@ import java.util.Date;
 public class Post
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer postId;
 
     @Column(name = "post_title" , length = 100 , nullable = false)
@@ -34,4 +36,7 @@ public class Post
 
     @ManyToOne
     private User user;
+
+    @OneToMany(mappedBy = "post" ,cascade = CascadeType.ALL)
+    private Set<Comment> comments = new HashSet<>();
 }
