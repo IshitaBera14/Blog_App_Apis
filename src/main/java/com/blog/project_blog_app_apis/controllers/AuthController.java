@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,37 +17,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/api/v1/auth")
-public class AuthController
-{
-    @Autowired
-    private JwtTokenHelper jwtTokenHelper;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtTokenHelper JwtTokenHelper;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request)
-    {
-        this.authenticate(request.getUsername() , request.getPassword());
-        UserDetails userDetails =this.userDetailsService.loadUserByUsername(request.getUsername());
-        String token = this.jwtTokenHelper.generateToken(userDetails);
+    public ResponseEntity<?> authenticate(@RequestBody JwtAuthRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
 
-        JwtAuthResponse response = new JwtAuthResponse();
-        response.setToken(token);
-        return new ResponseEntity<JwtAuthResponse>(response, HttpStatus.OK);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = JwtTokenHelper.generateToken(userDetails);
+
+        return ResponseEntity.ok(new JwtAuthResponse(token));
     }
-
-    private void authenticate (String username , String password)
-    {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username , password);
-        this.authenticationManager.authenticate(authenticationToken);
-
-    }
-
-
 }
