@@ -48,7 +48,7 @@ public class AuthController {
             if (!passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "Incorrect password. Please try again."));
+                        .body(Map.of("message", "Incorrect password. Please try again."));
             }
 
             // Authenticate if everything is fine
@@ -65,11 +65,11 @@ public class AuthController {
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "User not found with email: " + request.getUsername()));
+                    .body(Map.of("message", "User not found with email: " + request.getUsername()));
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Something went wrong!"));
+                    .body(Map.of("message", "Something went wrong!"));
         }
     }
 }
