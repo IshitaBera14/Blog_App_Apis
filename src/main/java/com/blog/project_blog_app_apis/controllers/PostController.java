@@ -7,6 +7,7 @@ import com.blog.project_blog_app_apis.payloads.PostDto;
 import com.blog.project_blog_app_apis.payloads.PostResponse;
 import com.blog.project_blog_app_apis.services.FileService;
 import com.blog.project_blog_app_apis.services.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,15 +20,14 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/")
 public class PostController {
-
 
     @Autowired
     PostService postService;
