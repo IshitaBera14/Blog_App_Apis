@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class User implements UserDetails
 {
     @Id
-    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(nullable = false)
@@ -33,10 +33,19 @@ public class User implements UserDetails
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+  /*  @ManyToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     @JoinTable(name = "user_role" , joinColumns = @JoinColumn(name = "user" ,referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name ="role" , referencedColumnName = "id"))
+    private Set<Role> roles = new HashSet<>();*/
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "role")
+    )
     private Set<Role> roles = new HashSet<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

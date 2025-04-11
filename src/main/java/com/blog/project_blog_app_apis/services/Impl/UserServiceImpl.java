@@ -1,12 +1,16 @@
 package com.blog.project_blog_app_apis.services.Impl;
 
+import com.blog.project_blog_app_apis.config.AppConstants;
+import com.blog.project_blog_app_apis.entities.Role;
 import com.blog.project_blog_app_apis.entities.User;
 import com.blog.project_blog_app_apis.exceptions.ResourceNotFoundException;
 import com.blog.project_blog_app_apis.payloads.UserDto;
+import com.blog.project_blog_app_apis.repositories.RoleRepo;
 import com.blog.project_blog_app_apis.repositories.UserRepo;
 import com.blog.project_blog_app_apis.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -22,6 +26,36 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleRepo roleRepo;
+
+
+    @Override
+    public UserDto registerNewUser(UserDto userDto) {
+       /* User user = this.modelMapper.map(userDto,User.class);
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        Role role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+        user.getRoles().add(role);
+        User newUser = this.userRepo.save(user);
+        return this.modelMapper.map(newUser, UserDto.class);*/
+
+        User user = new User();
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword())); // encrypted
+        user.setAbout(userDto.getAbout());
+
+        Role role = roleRepo.findById(AppConstants.ROLE_NORMAL)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.getRoles().add(role);
+
+
+        User savedUser = userRepo.save(user);
+        return modelMapper.map(savedUser, UserDto.class);
+    }
 
     @Override
     public UserDto createUser(UserDto userDto) {                //UserDto = class name
