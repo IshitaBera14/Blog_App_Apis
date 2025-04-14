@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword())); // encrypted
         user.setAbout(userDto.getAbout());
 
-        Role role = roleRepo.findById(AppConstants.ROLE_NORMAL)
+        Role role = roleRepo.findById(AppConstants.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         user.getRoles().add(role);
